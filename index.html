@@ -1,84 +1,1899 @@
-from pathlib import Path
-
-html = r'''<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEXUS Arena</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS ARENA — Gaming Hub</title>
+
 <style>
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#070711;color:#fff;font-family:Arial,sans-serif}a{text-decoration:none;color:inherit}
-nav{position:fixed;top:0;width:100%;height:70px;background:#090914ee;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 6%;z-index:10;border-bottom:1px solid #25253a}.logo{font-weight:900;font-size:22px;color:#00f7ff}.logo b{color:#ff00d4}nav ul{display:flex;gap:24px;list-style:none}nav li a:hover{color:#00f7ff}.join,.primary{background:#00f7ff;color:#050509;padding:12px 20px;border-radius:6px;font-weight:800}
-.hero{min-height:100vh;padding:130px 7% 70px;display:flex;align-items:center;background:radial-gradient(circle at 80% 40%,#4a0b60,transparent 35%),radial-gradient(circle at 80% 80%,#00505a,transparent 25%)}.hero h1{font-size:clamp(55px,8vw,95px);line-height:.9;margin:15px 0}.hero h1 span{color:#ff00d4}.hero p{max-width:650px;color:#aaaabd;font-size:18px;line-height:1.7}.buttons{display:flex;gap:12px;margin-top:25px}.secondary{border:1px solid #ff00d4;padding:12px 20px;border-radius:6px}.tag,.small{color:#00f7ff;font-size:11px;font-weight:800;letter-spacing:3px}
-section{padding:95px 7%;scroll-margin-top:75px}.dark{background:#090914}.title{text-align:center;margin-bottom:35px}.title h2{font-size:42px;margin:10px 0}.title p{color:#858598}
-.search{max-width:650px;margin:0 auto 35px;display:flex;gap:8px}.search input{flex:1;background:#11111f;border:1px solid #292940;color:#fff;padding:14px;border-radius:7px;outline:0}.search button,.play,.modal button{border:0;border-radius:7px;background:#00f7ff;color:#050509;padding:13px 18px;font-weight:800;cursor:pointer}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card{background:#11111f;border:1px solid #25253b;border-radius:12px;overflow:hidden}.card:hover{border-color:#00f7ff;transform:translateY(-4px)}.art{height:180px;display:flex;align-items:center;justify-content:center;font-size:70px;background:radial-gradient(circle,#461052,#141426 65%)}.info{padding:20px}.info h3{margin:0 0 8px}.info p{color:#858598;font-size:14px}.stars{color:#ffd500;margin:12px 0}.play{width:100%;background:#ff00d4;color:#fff}.play:hover{background:#00f7ff;color:#050509}
-.rows{max-width:850px;margin:auto}.row{display:grid;grid-template-columns:60px 1fr 120px;background:#11111f;border:1px solid #25253b;margin:9px 0;padding:17px;border-radius:9px}.score{text-align:right;color:#00f7ff;font-weight:800}
-.news .grid{grid-template-columns:repeat(3,1fr)}.news .card{padding:22px}.news .emoji{font-size:45px}.news h3{margin-bottom:7px}.news p{color:#858598;line-height:1.6}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;background:#070711}.stat{text-align:center;background:#10101c;padding:25px;border:1px solid #24243a;border-radius:9px}.stat h3{margin:0;color:#00f7ff;font-size:32px}.stat p{color:#858598}
-footer{text-align:center;padding:30px;color:#666679}footer b{color:#00f7ff}
-.overlay{position:fixed;inset:0;background:#000d;backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:15px;z-index:50}.overlay.show{display:flex}.modal{width:min(700px,100%);background:#10101c;border:1px solid #00f7ff;border-radius:14px;position:relative;overflow:hidden}.close{position:absolute;right:10px;top:7px;background:none!important;color:#aaa!important;font-size:28px!important;padding:0!important;z-index:2}.modal .inside{padding:28px}.modal h2{font-size:32px}.modal p{color:#858598;line-height:1.6}.modal input{width:100%;padding:13px;margin:6px 0;background:#080812;border:1px solid #292940;border-radius:7px;color:#fff}.full{width:100%}.gameart{height:220px;display:flex;align-items:center;justify-content:center;font-size:90px;background:radial-gradient(circle,#4b0c5f,#141426 65%)}canvas{display:block;width:100%;max-width:600px;margin:15px auto;background:#030309;border:1px solid #ff00d4}.gamehead{display:flex;justify-content:space-between;padding:20px;border-bottom:1px solid #25253b}.gamehead strong{color:#ffd500}.help{text-align:center;color:#858598}.restart{width:100%;margin-top:10px}
-@media(max-width:800px){nav ul{display:none}.grid,.news .grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.stats{grid-template-columns:1fr}.buttons{flex-direction:column;width:220px}.search{flex-direction:column}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+margin:0;
+background:#05050d;
+color:#fff;
+font-family:Arial,Helvetica,sans-serif;
+}
+a{text-decoration:none;color:inherit}
+
+nav{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:70px;
+background:#090914ee;
+backdrop-filter:blur(12px);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 6%;
+z-index:20;
+border-bottom:1px solid #24243b;
+}
+
+.logo{
+font-size:23px;
+font-weight:900;
+color:#00f7ff;
+}
+.logo span{color:#ff00d4}
+
+nav ul{
+display:flex;
+gap:25px;
+list-style:none;
+margin:0;
+padding:0;
+}
+
+nav a:hover{color:#00f7ff}
+
+.join,.primary{
+background:#00f7ff;
+color:#050509;
+padding:12px 20px;
+border-radius:7px;
+font-weight:900;
+}
+
+.hero{
+min-height:100vh;
+padding:130px 7% 70px;
+display:flex;
+align-items:center;
+background:
+radial-gradient(circle at 80% 30%,#4a0b60,transparent 32%),
+radial-gradient(circle at 80% 80%,#00555d,transparent 25%);
+}
+
+.tag,.small{
+color:#00f7ff;
+font-size:11px;
+font-weight:900;
+letter-spacing:3px;
+}
+
+.hero h1{
+font-size:clamp(55px,8vw,100px);
+line-height:.88;
+margin:15px 0;
+}
+
+.hero h1 span{color:#ff00d4}
+
+.hero p{
+max-width:650px;
+color:#aaaabd;
+font-size:18px;
+line-height:1.7;
+}
+
+.buttons{
+display:flex;
+gap:12px;
+margin-top:25px;
+}
+
+.secondary{
+border:1px solid #ff00d4;
+padding:12px 20px;
+border-radius:7px;
+}
+
+section{
+padding:95px 7%;
+scroll-margin-top:75px;
+}
+
+.dark{background:#090914}
+
+.title{
+text-align:center;
+margin-bottom:35px;
+}
+
+.title h2{
+font-size:42px;
+margin:10px 0;
+}
+
+.title p{color:#858598}
+
+.search{
+max-width:650px;
+margin:0 auto 35px;
+display:flex;
+gap:8px;
+}
+
+.search input{
+flex:1;
+background:#11111f;
+border:1px solid #292940;
+color:white;
+padding:14px;
+border-radius:7px;
+outline:none;
+}
+
+button{
+border:0;
+border-radius:7px;
+background:#00f7ff;
+color:#050509;
+padding:13px 18px;
+font-weight:900;
+cursor:pointer;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+}
+
+.card{
+background:#11111f;
+border:1px solid #25253b;
+border-radius:13px;
+overflow:hidden;
+transition:.25s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+border-color:#00f7ff;
+box-shadow:0 10px 35px #00f7ff18;
+}
+
+.art{
+height:180px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:75px;
+background:radial-gradient(circle,#461052,#141426 65%);
+}
+
+.info{padding:20px}
+
+.info h3{
+margin:0 0 8px;
+}
+
+.info p{
+color:#858598;
+font-size:14px;
+line-height:1.5;
+}
+
+.stars{
+color:#ffd500;
+margin:12px 0;
+}
+
+.play{
+width:100%;
+background:#ff00d4;
+color:white;
+}
+
+.play:hover{
+background:#00f7ff;
+color:#050509;
+}
+
+.rows{
+max-width:850px;
+margin:auto;
+}
+
+.row{
+display:grid;
+grid-template-columns:60px 1fr 120px;
+background:#11111f;
+border:1px solid #25253b;
+margin:9px 0;
+padding:17px;
+border-radius:9px;
+}
+
+.score{
+text-align:right;
+color:#00f7ff;
+font-weight:900;
+}
+
+.news .grid{
+grid-template-columns:repeat(3,1fr);
+}
+
+.news .card{
+padding:22px;
+}
+
+.news .emoji{
+font-size:45px;
+}
+
+.news p{
+color:#858598;
+line-height:1.6;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+background:#05050d;
+}
+
+.stat{
+text-align:center;
+background:#10101c;
+padding:25px;
+border:1px solid #24243a;
+border-radius:9px;
+}
+
+.stat h3{
+margin:0;
+color:#00f7ff;
+font-size:32px;
+}
+
+.stat p{color:#858598}
+
+footer{
+text-align:center;
+padding:30px;
+color:#666679;
+}
+
+footer b{color:#00f7ff}
+
+/* MODALS */
+
+.overlay{
+position:fixed;
+inset:0;
+background:#000e;
+backdrop-filter:blur(7px);
+display:none;
+align-items:center;
+justify-content:center;
+padding:15px;
+z-index:100;
+}
+
+.overlay.show{display:flex}
+
+.modal{
+width:min(780px,100%);
+max-height:94vh;
+overflow:auto;
+background:#10101c;
+border:1px solid #00f7ff;
+border-radius:15px;
+position:relative;
+box-shadow:0 0 60px #00f7ff20;
+}
+
+.close{
+position:absolute;
+right:12px;
+top:8px;
+background:transparent!important;
+color:#aaa!important;
+font-size:28px!important;
+padding:0!important;
+z-index:5;
+}
+
+.inside{
+padding:28px;
+}
+
+.modal h2{
+font-size:32px;
+}
+
+.modal p{
+color:#858598;
+line-height:1.6;
+}
+
+.modal input{
+width:100%;
+padding:13px;
+margin:6px 0;
+background:#080812;
+border:1px solid #292940;
+border-radius:7px;
+color:white;
+}
+
+.full{width:100%}
+
+/* GAME */
+
+.game-head{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:18px;
+border-bottom:1px solid #25253b;
+position:sticky;
+top:0;
+background:#10101cf5;
+z-index:3;
+}
+
+.game-head h3{
+margin:0;
+color:#00f7ff;
+}
+
+.hud{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.hud span{
+background:#181827;
+border:1px solid #292940;
+padding:7px 10px;
+border-radius:6px;
+font-size:12px;
+}
+
+canvas{
+display:block;
+width:100%;
+max-width:600px;
+height:auto;
+margin:10px auto;
+background:#020208;
+border:1px solid #ff00d4;
+border-radius:7px;
+touch-action:none;
+}
+
+.help{
+text-align:center;
+color:#858598;
+margin:10px;
+}
+
+.controls{
+display:flex;
+justify-content:center;
+gap:8px;
+margin:10px 0;
+}
+
+.controls button{
+background:#181827;
+color:white;
+border:1px solid #30304a;
+min-width:70px;
+}
+
+.controls button:hover{
+border-color:#00f7ff;
+}
+
+.restart{
+width:100%;
+margin-top:10px;
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+nav ul{display:none}
+
+.grid,
+.news .grid{
+grid-template-columns:1fr;
+}
+
+.stats{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:500px){
+
+.stats{
+grid-template-columns:1fr;
+}
+
+.buttons{
+flex-direction:column;
+width:230px;
+}
+
+.search{
+flex-direction:column;
+}
+
+.hero{
+padding-top:110px;
+}
+
+}
 </style>
 </head>
+
 <body>
-<nav><div class="logo">NEXUS<b>ARENA</b></div><ul><li><a href="#">Home</a></li><li><a href="#games">Games</a></li><li><a href="#leaderboard">Leaderboard</a></li><li><a href="#news">News</a></li></ul><a class="join" href="#" onclick="login();return false">JOIN NOW</a></nav>
 
-<section class="hero"><div><div class="tag">WELCOME TO THE ARENA</div><h1>ENTER THE<br><span>NEXUS</span></h1><p>Discover games, compete with players, climb the leaderboard and play browser mini-games in one gaming hub.</p><div class="buttons"><a class="primary" href="#games">EXPLORE GAMES</a><a class="secondary" href="#leaderboard">VIEW RANKINGS</a></div></div></section>
+<nav>
+<div class="logo">NEXUS<span>ARENA</span></div>
 
-<section id="games" class="dark"><div class="title"><div class="small">DISCOVER</div><h2>Featured Games</h2><p>Every game below has a playable browser mini-game.</p></div><div class="search"><input id="search" placeholder="Search games..." oninput="render()"><button onclick="render()">SEARCH</button></div><div class="grid" id="gamesGrid"></div></section>
+<ul>
+<li><a href="#">Home</a></li>
+<li><a href="#games">Games</a></li>
+<li><a href="#leaderboard">Leaderboard</a></li>
+<li><a href="#news">News</a></li>
+</ul>
 
-<section id="leaderboard"><div class="title"><div class="small">TOP PLAYERS</div><h2>Leaderboard</h2></div><div class="rows">
-<div class="row"><b>🥇</b><div>ShadowX<br><small>Legendary Player</small></div><div class="score">9850 XP</div></div>
-<div class="row"><b>🥈</b><div>NeonGhost<br><small>Elite Player</small></div><div class="score">9240 XP</div></div>
-<div class="row"><b>🥉</b><div>CyberWolf<br><small>Master Player</small></div><div class="score">8910 XP</div></div>
-<div class="row"><b>#4</b><div>DarkKnight<br><small>Pro Player</small></div><div class="score">8470 XP</div></div>
-<div class="row"><b>#5</b><div>GameMaster<br><small>Pro Player</small></div><div class="score">8120 XP</div></div>
-</div></section>
+<a class="join" href="#" onclick="login();return false">JOIN NOW</a>
+</nav>
 
-<section id="news" class="dark news"><div class="title"><div class="small">LATEST</div><h2>Gaming News</h2></div><div class="grid">
-<div class="card"><div class="emoji">🎮</div><h3>New Season</h3><p>New challenges and gaming events are now live.</p></div>
-<div class="card"><div class="emoji">🏆</div><h3>Global Championship</h3><p>Top players are preparing for the ultimate battle.</p></div>
-<div class="card"><div class="emoji">⚡</div><h3>Six Games Live</h3><p>Pick a game and start earning points.</p></div>
-</div></section>
 
-<section class="stats"><div class="stat"><h3>50K+</h3><p>Players</p></div><div class="stat"><h3>120+</h3><p>Games</p></div><div class="stat"><h3>35K+</h3><p>Matches</p></div><div class="stat"><h3>24/7</h3><p>Community</p></div></section>
+<section class="hero">
 
-<div class="overlay" id="loginBox"><div class="modal"><button class="close" onclick="hide('loginBox')">×</button><div class="inside"><div class="small">NEXUS ARENA</div><h2>Welcome Back</h2><p>Login is a demo for this website.</p><input placeholder="Email"><input type="password" placeholder="Password"><button class="full" onclick="alert('Login successful! 🎮');hide('loginBox')">LOGIN</button></div></div></div>
+<div>
 
-<div class="overlay" id="details"><div class="modal"><button class="close" onclick="hide('details')">×</button><div class="gameart" id="dIcon">🎮</div><div class="inside"><div class="small">PLAYABLE MINI-GAME</div><h2 id="dTitle"></h2><p id="dDesc"></p><button class="full" onclick="startGame()">▶ PLAY GAME</button></div></div></div>
+<div class="tag">WELCOME TO THE ARENA</div>
 
-<div class="overlay" id="gameBox"><div class="modal"><div class="gamehead"><h3 id="gTitle">GAME</h3><strong>Score: <span id="score">0</span></strong><button class="close" onclick="hideGame()">×</button></div><div class="inside"><canvas id="canvas" width="600" height="360"></canvas><div class="help" id="help"></div><button class="restart full" onclick="restart()">🔄 RESTART</button></div></div></div>
+<h1>
+ENTER THE<br>
+<span>NEXUS</span>
+</h1>
 
-<footer>© 2026 <b>NEXUS Arena</b> — Enter the Game.</footer>
+<p>
+Challenge yourself in six advanced browser games.
+Destroy enemies, dodge traffic, defend kingdoms,
+build combos and beat your personal high score.
+</p>
+
+<div class="buttons">
+
+<a class="primary" href="#games">
+EXPLORE GAMES
+</a>
+
+<a class="secondary" href="#leaderboard">
+VIEW RANKINGS
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section id="games" class="dark">
+
+<div class="title">
+
+<div class="small">ARCADE</div>
+
+<h2>Featured Games</h2>
+
+<p>
+Six playable games with levels, lives, power-ups and scoring.
+</p>
+
+</div>
+
+
+<div class="search">
+
+<input
+id="search"
+placeholder="Search games..."
+oninput="renderGames()">
+
+<button onclick="renderGames()">
+SEARCH
+</button>
+
+</div>
+
+
+<div class="grid" id="gamesGrid"></div>
+
+</section>
+
+
+<section id="leaderboard">
+
+<div class="title">
+
+<div class="small">TOP PLAYERS</div>
+
+<h2>Leaderboard</h2>
+
+<p>Beat your personal best and become a legend.</p>
+
+</div>
+
+<div class="rows">
+
+<div class="row">
+<b>🥇</b>
+<div>ShadowX<br><small>Legendary Player</small></div>
+<div class="score">9850 XP</div>
+</div>
+
+<div class="row">
+<b>🥈</b>
+<div>NeonGhost<br><small>Elite Player</small></div>
+<div class="score">9240 XP</div>
+</div>
+
+<div class="row">
+<b>🥉</b>
+<div>CyberWolf<br><small>Master Player</small></div>
+<div class="score">8910 XP</div>
+</div>
+
+<div class="row">
+<b>#4</b>
+<div>DarkKnight<br><small>Pro Player</small></div>
+<div class="score">8470 XP</div>
+</div>
+
+<div class="row">
+<b>#5</b>
+<div>GameMaster<br><small>Pro Player</small></div>
+<div class="score">8120 XP</div>
+</div>
+
+</div>
+
+</section>
+
+
+<section id="news" class="dark news">
+
+<div class="title">
+
+<div class="small">LATEST</div>
+
+<h2>Gaming News</h2>
+
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="emoji">🎮</div>
+<h3>Arcade Update</h3>
+<p>
+Six advanced mini-games are now available.
+</p>
+</div>
+
+<div class="card">
+<div class="emoji">🏆</div>
+<h3>Score Attack</h3>
+<p>
+Beat your local high score and climb the rankings.
+</p>
+</div>
+
+<div class="card">
+<div class="emoji">⚡</div>
+<h3>Power-Ups</h3>
+<p>
+Collect special items and gain powerful boosts.
+</p>
+</div>
+
+</div>
+
+</section>
+
+
+<section class="stats">
+
+<div class="stat">
+<h3>50K+</h3>
+<p>Players</p>
+</div>
+
+<div class="stat">
+<h3>120+</h3>
+<p>Games</p>
+</div>
+
+<div class="stat">
+<h3>35K+</h3>
+<p>Matches</p>
+</div>
+
+<div class="stat">
+<h3>24/7</h3>
+<p>Community</p>
+</div>
+
+</section>
+
+
+<!-- LOGIN -->
+
+<div class="overlay" id="loginBox">
+
+<div class="modal">
+
+<button class="close" onclick="hide('loginBox')">×</button>
+
+<div class="inside">
+
+<div class="small">NEXUS ARENA</div>
+
+<h2>Welcome Back</h2>
+
+<p>This is a demo login.</p>
+
+<input placeholder="Email">
+
+<input
+type="password"
+placeholder="Password">
+
+<button
+class="full"
+onclick="alert('Login successful! 🎮');hide('loginBox')">
+
+LOGIN
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- GAME DETAILS -->
+
+<div class="overlay" id="details">
+
+<div class="modal">
+
+<button class="close" onclick="hide('details')">×</button>
+
+<div
+style="
+height:210px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:90px;
+background:radial-gradient(circle,#4b0c5f,#141426 65%);
+"
+id="gameIcon">
+🎮
+</div>
+
+<div class="inside">
+
+<div class="small">ADVANCED GAME</div>
+
+<h2 id="gameTitle"></h2>
+
+<p id="gameDesc"></p>
+
+<button
+class="full"
+onclick="startGame()">
+
+▶ PLAY GAME
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- GAME -->
+
+<div class="overlay" id="gameBox">
+
+<div class="modal">
+
+<div class="game-head">
+
+<h3 id="gameName">
+GAME
+</h3>
+
+<div class="hud">
+
+<span>
+Score:
+<b id="score">0</b>
+</span>
+
+<span>
+Lives:
+<b id="lives">3</b>
+</span>
+
+<span>
+Level:
+<b id="level">1</b>
+</span>
+
+<span>
+Best:
+<b id="best">0</b>
+</span>
+
+</div>
+
+<button
+class="close"
+onclick="closeGame()">
+×
+</button>
+
+</div>
+
+
+<div class="inside">
+
+<canvas
+id="canvas"
+width="600"
+height="360">
+</canvas>
+
+<div
+class="help"
+id="help">
+</div>
+
+
+<div class="controls">
+
+<button onclick="moveLeft()">◀</button>
+
+<button onclick="fire()">🔥 FIRE</button>
+
+<button onclick="moveRight()">▶</button>
+
+</div>
+
+
+<button
+class="restart"
+onclick="restartGame()">
+
+🔄 RESTART
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<footer>
+
+© 2026 <b>NEXUS Arena</b> — Enter the Game.
+
+</footer>
+
 
 <script>
+
 const games=[
-{name:"Shadow Legends",icon:"⚔️",desc:"Click the enemy target to attack and score.",type:"click",color:"#ff3030"},
-{name:"Galaxy Strike",icon:"🚀",desc:"Move your ship and shoot enemy ships.",type:"shooter"},
-{name:"Neon Racers",icon:"🏎️",desc:"Dodge traffic and survive the highway.",type:"racer"},
-{name:"Dark Infection",icon:"🧟",desc:"Click zombies before they escape.",type:"zombie",color:"#72ff3b"},
-{name:"Cyber Ninja",icon:"🥷",desc:"Hit neon targets as fast as possible.",type:"click",color:"#ff00d4"},
-{name:"Kingdom Wars",icon:"🏰",desc:"Defend your castle by clicking enemies.",type:"castle",color:"#ffd500"}
+
+{
+name:"Shadow Legends",
+icon:"⚔️",
+desc:"Fight enemy waves, attack monsters and survive.",
+type:"battle"
+},
+
+{
+name:"Galaxy Strike",
+icon:"🚀",
+desc:"Destroy enemy ships, collect power-ups and survive.",
+type:"shooter"
+},
+
+{
+name:"Neon Racers",
+icon:"🏎️",
+desc:"Dodge traffic, collect coins and survive increasing speed.",
+type:"racer"
+},
+
+{
+name:"Dark Infection",
+icon:"🧟",
+desc:"Stop the zombie outbreak before the zombies escape.",
+type:"zombie"
+},
+
+{
+name:"Cyber Ninja",
+icon:"🥷",
+desc:"Hit targets quickly and build a combo multiplier.",
+type:"ninja"
+},
+
+{
+name:"Kingdom Wars",
+icon:"🏰",
+desc:"Defend your castle from increasingly dangerous enemies.",
+type:"castle"
+}
+
 ];
-let selected=null,type=null,score=0,timer=null,target=null,playerX=275,objects=[],shots=[],enemy={x:280,y:10},keys={};
-const canvas=document.getElementById("canvas"),ctx=canvas.getContext("2d");
-function render(){let q=document.getElementById("search").value.toLowerCase();document.getElementById("gamesGrid").innerHTML=games.filter(g=>g.name.toLowerCase().includes(q)).map((g,i)=>`<div class="card"><div class="art">${g.icon}</div><div class="info"><h3>${g.name}</h3><p>${g.desc}</p><div class="stars">★★★★★</div><button class="play" onclick="openDetails(${i})">▶ PLAY NOW</button></div></div>`).join("")}render();
-function show(id){document.getElementById(id).classList.add("show")}function hide(id){document.getElementById(id).classList.remove("show")}function login(){show("loginBox")}
-function openDetails(i){selected=games[i];dIcon.textContent=selected.icon;dTitle.textContent=selected.name;dDesc.textContent=selected.desc;show("details")}
-function startGame(){hide("details");show("gameBox");type=selected.type;gTitle.textContent=selected.name.toUpperCase();help.textContent=type==="shooter"?"← → to move, SPACE to shoot":"Click the target to score points.";restart()}
-function hideGame(){clearInterval(timer);hide("gameBox");window.onkeydown=null}
-function restart(){clearInterval(timer);score=0;document.getElementById("score").textContent=0;objects=[];shots=[];target=null;playerX=275;enemy={x:280,y:10};if(type==="shooter")timer=setInterval(shooter,30);else if(type==="racer")timer=setInterval(racer,35);else timer=setInterval(targetGame,700);draw()}
-function addScore(n){score+=n;document.getElementById("score").textContent=score}
-function draw(){ctx.fillStyle="#030309";ctx.fillRect(0,0,600,360);ctx.strokeStyle="#111124";for(let x=0;x<600;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,360);ctx.stroke()}for(let y=0;y<360;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(600,y);ctx.stroke()}}
-function targetGame(){draw();target={x:30+Math.random()*540,y:40+Math.random()*270,r:22};ctx.fillStyle=selected.color||"#ff00d4";ctx.beginPath();ctx.arc(target.x,target.y,target.r,0,Math.PI*2);ctx.fill()}
-canvas.addEventListener("click",e=>{if(!target)return;let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*600/r.width,y=(e.clientY-r.top)*360/r.height;if(Math.hypot(x-target.x,y-target.y)<target.r){addScore(10);if(score>=100){alert("You won! Score: "+score);restart()}else targetGame()}})
-function shooter(){draw();ctx.fillStyle="#00f7ff";ctx.fillRect(playerX,315,50,25);ctx.fillStyle="#ff3030";ctx.fillRect(enemy.x,enemy.y,35,25);enemy.y+=2;shots.forEach(s=>s.y-=9);shots=shots.filter(s=>s.y>0);ctx.fillStyle="#ffd500";shots.forEach(s=>ctx.fillRect(s.x,s.y,5,12));for(let i=shots.length-1;i>=0;i--){let s=shots[i];if(s.x<enemy.x+35&&s.x+5>enemy.x&&s.y<enemy.y+25&&s.y+12>enemy.y){shots.splice(i,1);addScore(10);enemy={x:Math.random()*560,y:0}}}if(enemy.y>360)enemy={x:Math.random()*560,y:0}}
-function racer(){draw();ctx.fillStyle="#00f7ff";ctx.fillRect(playerX,300,45,40);if(!objects.length||objects[objects.length-1].y>90)objects.push({x:Math.random()*555,y:-50});ctx.fillStyle="#ff3030";objects.forEach(o=>{o.y+=7;ctx.fillRect(o.x,o.y,35,55)});objects=objects.filter(o=>o.y<380);for(const o of objects)if(o.x<playerX+45&&o.x+35>playerX&&o.y<340&&o.y+55>300){alert("Crash! Score: "+score);restart();return}addScore(1)}
-window.onkeydown=e=>{if(e.key==="ArrowLeft")playerX=Math.max(0,playerX-25);if(e.key==="ArrowRight")playerX=Math.min(555,playerX+25);if(e.code==="Space"&&type==="shooter"){shots.push({x:playerX+22,y:305});e.preventDefault()}}
+
+
+let selected=null;
+let type=null;
+
+let score=0;
+let lives=3;
+let level=1;
+
+let timer=null;
+
+let playerX=275;
+let playerY=300;
+
+let objects=[];
+let shots=[];
+
+let target=null;
+
+let tick=0;
+let combo=1;
+
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+
+function renderGames(){
+
+let q=document
+.getElementById("search")
+.value
+.toLowerCase();
+
+document.getElementById("gamesGrid").innerHTML=
+
+games
+.filter(g=>g.name.toLowerCase().includes(q))
+.map((g,i)=>`
+
+<div class="card">
+
+<div class="art">
+${g.icon}
+</div>
+
+<div class="info">
+
+<h3>${g.name}</h3>
+
+<p>${g.desc}</p>
+
+<div class="stars">
+★★★★★
+</div>
+
+<button
+class="play"
+onclick="openGame(${i})">
+
+▶ PLAY NOW
+
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+renderGames();
+
+
+function show(id){
+document.getElementById(id).classList.add("show");
+}
+
+function hide(id){
+document.getElementById(id).classList.remove("show");
+}
+
+function login(){
+show("loginBox");
+}
+
+
+function openGame(i){
+
+selected=games[i];
+
+gameIcon.textContent=selected.icon;
+gameTitle.textContent=selected.name;
+gameDesc.textContent=selected.desc;
+
+show("details");
+
+}
+
+
+function startGame(){
+
+hide("details");
+
+show("gameBox");
+
+type=selected.type;
+
+gameName.textContent=
+selected.name.toUpperCase();
+
+help.textContent=getHelp();
+
+restartGame();
+
+}
+
+
+function getHelp(){
+
+if(type==="shooter")
+return "Arrow keys / buttons to move • SPACE or FIRE to shoot • Collect yellow power-ups.";
+
+if(type==="racer")
+return "Move left/right • Collect coins • Avoid red cars.";
+
+if(type==="battle")
+return "Move and press FIRE/SPACE to attack enemies.";
+
+if(type==="zombie")
+return "Click zombies before they reach the bottom.";
+
+if(type==="ninja")
+return "Click the glowing target quickly to build your combo.";
+
+if(type==="castle")
+return "Click enemies before they reach the castle.";
+
+}
+
+
+function closeGame(){
+
+clearInterval(timer);
+
+hide("gameBox");
+
+}
+
+
+function restartGame(){
+
+clearInterval(timer);
+
+score=0;
+lives=3;
+level=1;
+
+playerX=275;
+playerY=300;
+
+objects=[];
+shots=[];
+
+target=null;
+
+tick=0;
+combo=1;
+
+updateHUD();
+
+window.onkeydown=keyboard;
+
+if(type==="shooter")
+timer=setInterval(shooter,30);
+
+else if(type==="racer")
+timer=setInterval(racer,35);
+
+else if(type==="battle")
+timer=setInterval(battle,35);
+
+else if(type==="zombie")
+timer=setInterval(zombie,35);
+
+else if(type==="castle")
+timer=setInterval(castle,35);
+
+else if(type==="ninja")
+timer=setInterval(ninja,700);
+
+drawBackground();
+
+}
+
+
+function updateHUD(){
+
+scoreEl.textContent=score;
+livesEl.textContent=lives;
+levelEl.textContent=level;
+
+let key="best_"+type;
+
+let bestScore=
+Number(localStorage.getItem(key)||0);
+
+bestEl.textContent=bestScore;
+
+}
+
+
+function addScore(amount){
+
+score+=amount;
+
+level=
+1+Math.floor(score/100);
+
+let key="best_"+type;
+
+let bestScore=
+Number(localStorage.getItem(key)||0);
+
+if(score>bestScore)
+localStorage.setItem(key,score);
+
+updateHUD();
+
+}
+
+
+function loseLife(){
+
+lives--;
+
+updateHUD();
+
+if(lives<=0){
+
+alert(
+"GAME OVER!\n\nYour score: "+score
+);
+
+restartGame();
+
+}
+
+}
+
+
+function keyboard(e){
+
+if(e.key==="ArrowLeft")
+moveLeft();
+
+if(e.key==="ArrowRight")
+moveRight();
+
+if(e.key==="ArrowUp")
+playerY=Math.max(180,playerY-20);
+
+if(e.key==="ArrowDown")
+playerY=Math.min(325,playerY+20);
+
+if(e.code==="Space"){
+
+e.preventDefault();
+
+fire();
+
+}
+
+}
+
+
+function moveLeft(){
+
+playerX=Math.max(
+5,
+playerX-28
+);
+
+}
+
+
+function moveRight(){
+
+playerX=Math.min(
+550,
+playerX+28
+);
+
+}
+
+
+function fire(){
+
+if(
+type==="shooter" ||
+type==="battle"
+){
+
+shots.push({
+x:playerX+20,
+y:playerY
+});
+
+}
+
+}
+
+
+function drawBackground(){
+
+ctx.fillStyle="#020208";
+
+ctx.fillRect(
+0,
+0,
+600,
+360
+);
+
+ctx.strokeStyle="#101027";
+
+for(let x=0;x<600;x+=30){
+
+ctx.beginPath();
+
+ctx.moveTo(x,0);
+ctx.lineTo(x,360);
+
+ctx.stroke();
+
+}
+
+for(let y=0;y<360;y+=30){
+
+ctx.beginPath();
+
+ctx.moveTo(0,y);
+ctx.lineTo(600,y);
+
+ctx.stroke();
+
+}
+
+}
+
+
+function drawPlayer(){
+
+ctx.fillStyle="#00f7ff";
+
+ctx.shadowColor="#00f7ff";
+ctx.shadowBlur=15;
+
+ctx.fillRect(
+playerX,
+playerY,
+45,
+25
+);
+
+ctx.shadowBlur=0;
+
+}
+
+
+function shooter(){
+
+drawBackground();
+
+drawPlayer();
+
+tick++;
+
+
+if(tick%50===0){
+
+objects.push({
+
+x:20+Math.random()*540,
+y:-30,
+w:30,
+h:25,
+speed:1.5+level*.25,
+type:"enemy"
+
+});
+
+}
+
+
+if(tick%300===0){
+
+objects.push({
+
+x:20+Math.random()*540,
+y:-20,
+w:22,
+h:22,
+speed:2,
+type:"power"
+
+});
+
+}
+
+
+shots.forEach(s=>s.y-=9);
+
+shots=
+shots.filter(s=>s.y>-20);
+
+
+objects.forEach(o=>o.y+=o.speed);
+
+objects=
+objects.filter(o=>o.y<390);
+
+
+objects.forEach(o=>{
+
+ctx.fillStyle=
+o.type==="power"
+?"#ffd500"
+:"#ff3030";
+
+ctx.shadowColor=ctx.fillStyle;
+ctx.shadowBlur=15;
+
+ctx.fillRect(
+o.x,
+o.y,
+o.w,
+o.h
+);
+
+ctx.shadowBlur=0;
+
+});
+
+
+for(let i=shots.length-1;i>=0;i--){
+
+for(let j=objects.length-1;j>=0;j--){
+
+let s=shots[i];
+let o=objects[j];
+
+if(
+s.x<o.x+o.w &&
+s.x+5>o.x &&
+s.y<o.y+o.h &&
+s.y+10>o.y
+){
+
+shots.splice(i,1);
+
+objects.splice(j,1);
+
+addScore(
+o.type==="power"
+?30
+:10
+);
+
+break;
+
+}
+
+}
+
+}
+
+
+objects.forEach((o,i)=>{
+
+if(
+o.type==="enemy" &&
+o.y>playerY &&
+o.x<playerX+45 &&
+o.x+o.w>playerX
+){
+
+objects.splice(i,1);
+
+loseLife();
+
+}
+
+});
+
+
+if(score>=300){
+
+alert(
+"🚀 GALAXY CLEARED!\nScore: "+score
+);
+
+restartGame();
+
+}
+
+}
+
+
+function racer(){
+
+drawBackground();
+
+drawPlayer();
+
+tick++;
+
+
+if(tick%35===0){
+
+objects.push({
+
+x:Math.random()*555,
+y:-60,
+w:38,
+h:55,
+speed:5+level*.5,
+type:"car"
+
+});
+
+}
+
+
+if(tick%65===0){
+
+objects.push({
+
+x:10+Math.random()*560,
+y:-20,
+w:18,
+h:18,
+speed:5,
+type:"coin"
+
+});
+
+}
+
+
+objects.forEach(o=>{
+
+o.y+=o.speed;
+
+});
+
+
+objects=
+objects.filter(o=>o.y<390);
+
+
+objects.forEach(o=>{
+
+ctx.fillStyle=
+o.type==="coin"
+?"#ffd500"
+:"#ff3030";
+
+ctx.fillRect(
+o.x,
+o.y,
+o.w,
+o.h
+);
+
+});
+
+
+for(let i=objects.length-1;i>=0;i--){
+
+let o=objects[i];
+
+if(
+o.x<playerX+45 &&
+o.x+o.w>playerX &&
+o.y<playerY+25 &&
+o.y+o.h>playerY
+){
+
+objects.splice(i,1);
+
+if(o.type==="coin")
+addScore(25);
+
+else
+loseLife();
+
+}
+
+}
+
+
+if(tick%10===0)
+addScore(1);
+
+
+if(score>=500){
+
+alert(
+"🏎️ RACE WON!\nScore: "+score
+);
+
+restartGame();
+
+}
+
+}
+
+
+function battle(){
+
+drawBackground();
+
+drawPlayer();
+
+tick++;
+
+
+if(tick%55===0){
+
+objects.push({
+
+x:Math.random()*550,
+y:20,
+w:30,
+h:30,
+speed:.4+level*.1
+
+});
+
+}
+
+
+shots.forEach(s=>s.y-=8);
+
+shots=
+shots.filter(s=>s.y>0);
+
+
+objects.forEach(o=>o.y+=o.speed);
+
+
+objects.forEach(o=>{
+
+ctx.fillStyle="#ff3030";
+
+ctx.shadowColor="#ff3030";
+ctx.shadowBlur=10;
+
+ctx.fillRect(
+o.x,
+o.y,
+o.w,
+o.h
+);
+
+ctx.shadowBlur=0;
+
+});
+
+
+for(let i=shots.length-1;i>=0;i--){
+
+for(let j=objects.length-1;j>=0;j--){
+
+let s=shots[i];
+let o=objects[j];
+
+if(
+s.x<o.x+o.w &&
+s.x+5>o.x &&
+s.y<o.y+o.h &&
+s.y+10>o.y
+){
+
+shots.splice(i,1);
+
+objects.splice(j,1);
+
+addScore(15);
+
+break;
+
+}
+
+}
+
+}
+
+
+objects.forEach((o,i)=>{
+
+if(o.y>playerY-15){
+
+objects.splice(i,1);
+
+loseLife();
+
+}
+
+});
+
+
+if(score>=250){
+
+alert(
+"⚔️ LEGENDARY VICTORY!\nScore: "+score
+);
+
+restartGame();
+
+}
+
+}
+
+
+function zombie(){
+
+drawBackground();
+
+drawPlayer();
+
+tick++;
+
+
+if(tick%45===0){
+
+objects.push({
+
+x:Math.random()*570,
+y:-30,
+w:28,
+h:28,
+speed:1+level*.25
+
+});
+
+}
+
+
+objects.forEach(o=>o.y+=o.speed);
+
+
+objects=
+objects.filter(o=>o.y<390);
+
+
+objects.forEach(o=>{
+
+ctx.fillStyle="#72ff3b";
+
+ctx.shadowColor="#72ff3b";
+ctx.shadowBlur=12;
+
+ctx.fillRect(
+o.x,
+o.y,
+o.w,
+o.h
+);
+
+ctx.shadowBlur=0;
+
+});
+
+
+}
+
+
+function castle(){
+
+drawBackground();
+
+
+ctx.fillStyle="#00f7ff";
+
+ctx.shadowColor="#00f7ff";
+ctx.shadowBlur=20;
+
+ctx.fillRect(
+270,
+300,
+60,
+60
+);
+
+ctx.shadowBlur=0;
+
+tick++;
+
+
+if(tick%40===0){
+
+objects.push({
+
+x:Math.random()*570,
+y:-30,
+w:25,
+h:25,
+speed:1+level*.18
+
+});
+
+}
+
+
+objects.forEach(o=>o.y+=o.speed);
+
+objects=
+objects.filter(o=>o.y<390);
+
+
+objects.forEach(o=>{
+
+ctx.fillStyle="#ff3030";
+
+ctx.fillRect(
+o.x,
+o.y,
+o.w,
+o.h
+);
+
+});
+
+
+objects.forEach((o,i)=>{
+
+if(o.y>285){
+
+objects.splice(i,1);
+
+loseLife();
+
+}
+
+});
+
+
+if(score>=250){
+
+alert(
+"🏰 CASTLE DEFENDED!\nScore: "+score
+);
+
+restartGame();
+
+}
+
+}
+
+
+function ninja(){
+
+drawBackground();
+
+target={
+
+x:35+Math.random()*530,
+y:35+Math.random()*280,
+r:22
+
+};
+
+ctx.fillStyle="#ff00d4";
+
+ctx.shadowColor="#ff00d4";
+ctx.shadowBlur=20;
+
+ctx.beginPath();
+
+ctx.arc(
+target.x,
+target.y,
+target.r,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.shadowBlur=0;
+
+}
+
+
+canvas.addEventListener("click",function(e){
+
+if(type==="zombie"){
+
+let r=
+canvas.getBoundingClientRect();
+
+let x=
+(e.clientX-r.left)
+*600/r.width;
+
+let y=
+(e.clientY-r.top)
+*360/r.height;
+
+
+for(let i=objects.length-1;i>=0;i--){
+
+let o=objects[i];
+
+if(
+x>o.x &&
+x<o.x+o.w &&
+y>o.y &&
+y<o.y+o.h
+){
+
+objects.splice(i,1);
+
+addScore(15);
+
+return;
+
+}
+
+}
+
+}
+
+
+if(type==="castle"){
+
+let r=
+canvas.getBoundingClientRect();
+
+let x=
+(e.clientX-r.left)
+*600/r.width;
+
+let y=
+(e.clientY-r.top)
+*360/r.height;
+
+
+for(let i=objects.length-1;i>=0;i--){
+
+let o=objects[i];
+
+if(
+x>o.x &&
+x<o.x+o.w &&
+y>o.y &&
+y<o.y+o.h
+){
+
+objects.splice(i,1);
+
+addScore(20);
+
+return;
+
+}
+
+}
+
+}
+
+
+if(type==="ninja" && target){
+
+let r=
+canvas.getBoundingClientRect();
+
+let x=
+(e.clientX-r.left)
+*600/r.width;
+
+let y=
+(e.clientY-r.top)
+*360/r.height;
+
+
+let distance=
+Math.hypot(
+x-target.x,
+y-target.y
+);
+
+
+if(distance<target.r){
+
+addScore(
+10*combo
+);
+
+combo=Math.min(
+combo+1,
+5
+);
+
+if(score>=200){
+
+alert(
+"🥷 NINJA MASTER!\nScore: "+score
+);
+
+restartGame();
+
+}
+
+}
+
+}
+
+});
+
+
 </script>
+
 </body>
-</html>'''
-path=Path("/mnt/data/index.html")
-path.write_text(html, encoding="utf-8")
-print(path)
+</html>
