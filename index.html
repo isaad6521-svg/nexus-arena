@@ -1,5 +1,8 @@
 from pathlib import Path
 
+# Use the user's supplied NEXUS ARENA code, with the main JavaScript reliability
+# issue fixed: all HTML elements are explicitly queried instead of relying on
+# browser-created global variables for element IDs.
 html = r'''<!doctype html>
 <html lang="en">
 <head>
@@ -34,39 +37,182 @@ const games=[
 {name:"Dark Infection",icon:"🧟",desc:"Zombie survival: aim with the mouse/touch and stop the horde.",type:"zombie"},
 {name:"Cyber Ninja",icon:"🥷",desc:"Fast neon reflex game with shrinking targets and combo scoring.",type:"ninja"},
 {name:"Kingdom Wars",icon:"🏰",desc:"Castle defense with marching enemies and arrow attacks.",type:"castle"}];
+
 let selected=null,type="",timer=null,score=0,lives=3,level=1,frame=0,px=410,py=370,bullets=[],enemies=[],items=[],stars=[],target=null,combo=0,gameOver=false,bursts=[];
-const c=document.getElementById("canvas"),x=c.getContext("2d");
-function renderGames(){let q=document.getElementById("search").value.toLowerCase();gamesGrid.innerHTML=games.filter(g=>g.name.toLowerCase().includes(q)).map((g,i)=>`<div class="card"><div class="art">${g.icon}</div><div class="info"><h3>${g.name}</h3><p>${g.desc}</p><div class="stars">★★★★★</div><button class="play" onclick="details(${i})">▶ PLAY NOW</button></div></div>`).join("")}renderGames();
-function show(id){document.getElementById(id).classList.add("show")}function hide(id){document.getElementById(id).classList.remove("show")}
-function details(i){selected=games[i];detailIcon.textContent=selected.icon;detailTitle.textContent=selected.name;detailDesc.textContent=selected.desc;show("details")}
-function launchGame(){hide("details");show("gameBox");type=selected.type;gameName.textContent=selected.name.toUpperCase();help.textContent=type==="racer"?"← → steer • collect coins • avoid traffic":type==="shooter"?"← → move • SPACE/ACTION fire":type==="zombie"?"CLICK/TAP zombies before they reach you":type==="ninja"?"CLICK/TAP the target • build combos":type==="castle"?"CLICK/TAP enemies • defend the castle":"← → move • SPACE/ACTION attack";restart()}
+
+const $=id=>document.getElementById(id);
+const gamesGrid=$("gamesGrid"), search=$("search"), detailsBox=$("details"), gameBox=$("gameBox");
+const detailIcon=$("detailIcon"), detailTitle=$("detailTitle"), detailDesc=$("detailDesc");
+const gameName=$("gameName"), help=$("help"), scoreEl=$("score"), livesEl=$("lives"), levelEl=$("level");
+const c=$("canvas"), x=c.getContext("2d");
+
+function renderGames(){
+  let q=search.value.toLowerCase();
+  gamesGrid.innerHTML=games.filter(g=>g.name.toLowerCase().includes(q)).map((g,i)=>`
+  <div class="card"><div class="art">${g.icon}</div><div class="info"><h3>${g.name}</h3><p>${g.desc}</p><div class="stars">★★★★★</div><button class="play" onclick="details(${i})">▶ PLAY NOW</button></div></div>`).join("");
+}
+renderGames();
+
+function show(id){$(id).classList.add("show")}
+function hide(id){$(id).classList.remove("show")}
+
+function details(i){
+  selected=games[i];
+  detailIcon.textContent=selected.icon;
+  detailTitle.textContent=selected.name;
+  detailDesc.textContent=selected.desc;
+  show("details");
+}
+
+function launchGame(){
+  hide("details");
+  show("gameBox");
+  type=selected.type;
+  gameName.textContent=selected.name.toUpperCase();
+  help.textContent=type==="racer"?"← → steer • collect coins • avoid traffic":
+    type==="shooter"?"← → move • SPACE/ACTION fire":
+    type==="zombie"?"CLICK/TAP zombies before they reach you":
+    type==="ninja"?"CLICK/TAP the target • build combos":
+    type==="castle"?"CLICK/TAP enemies • defend the castle":
+    "← → move • SPACE/ACTION attack";
+  restart();
+}
+
 function closeGame(){clearInterval(timer);hide("gameBox")}
 function hud(){scoreEl.textContent=score;livesEl.textContent=lives;levelEl.textContent=level}
 function add(n){score+=n;level=1+Math.floor(score/150);hud()}
-function damage(){lives--;hud();if(lives<=0){gameOver=true;setTimeout(()=>{alert("GAME OVER! Score: "+score);restart()},20)}}
-function left(){px=Math.max(25,px-45)}function right(){px=Math.min(795,px+45)}
-function action(){if(type==="shooter"||type==="battle")bullets.push({x:px,y:py-20,v:12});else if(type==="castle")castleFire();else if(type==="racer")px=Math.max(100,px-70)}
-document.addEventListener("keydown",e=>{if(!gameBox.classList.contains("show"))return;if(e.key==="ArrowLeft")left();if(e.key==="ArrowRight")right();if(e.code==="Space"){e.preventDefault();action()}})
-function reset(){clearInterval(timer);score=0;lives=3;level=1;frame=0;px=410;py=370;bullets=[];enemies=[];items=[];target=null;combo=0;gameOver=false;bursts=[];stars=[];for(let i=0;i<100;i++)stars.push({x:Math.random()*820,y:Math.random()*460,s:1+Math.random()*3,v:.5+Math.random()*2});hud()}
+function damage(){
+  lives--;hud();
+  if(lives<=0){
+    gameOver=true;
+    setTimeout(()=>{alert("GAME OVER! Score: "+score);restart()},20);
+  }
+}
+function left(){px=Math.max(25,px-45)}
+function right(){px=Math.min(795,px+45)}
+function action(){
+  if(type==="shooter"||type==="battle")bullets.push({x:px,y:py-20,v:12});
+  else if(type==="castle")castleFire();
+  else if(type==="racer")px=Math.max(100,px-70);
+}
+
+document.addEventListener("keydown",e=>{
+  if(!gameBox.classList.contains("show"))return;
+  if(e.key==="ArrowLeft")left();
+  if(e.key==="ArrowRight")right();
+  if(e.code==="Space"){e.preventDefault();action()}
+});
+
+function reset(){
+  clearInterval(timer);score=0;lives=3;level=1;frame=0;px=410;py=370;
+  bullets=[];enemies=[];items=[];target=null;combo=0;gameOver=false;bursts=[];stars=[];
+  for(let i=0;i<100;i++)stars.push({x:Math.random()*820,y:Math.random()*460,s:1+Math.random()*3,v:.5+Math.random()*2});
+  hud();
+}
 function restart(){reset();if(type==="ninja")timer=setInterval(ninja,30);else timer=setInterval(loop,30)}
-function bg(){x.fillStyle="#020208";x.fillRect(0,0,820,460)}function starfield(){for(const s of stars){s.y+=s.v*(1+level*.04);if(s.y>460){s.y=-3;s.x=Math.random()*820}x.globalAlpha=.25+s.s/5;x.fillStyle="#fff";x.fillRect(s.x,s.y,s.s,s.s*2)}x.globalAlpha=1}
-function burst(a,b){for(let i=0;i<15;i++)bursts.push({x:a,y:b,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*6,l:22})}
-function effects(){for(const q of bursts){q.x+=q.vx;q.y+=q.vy;q.l--;x.globalAlpha=q.l/22;x.fillStyle=q.l%2?"#ffd500":"#ff00d4";x.beginPath();x.arc(q.x,q.y,Math.max(2,20-q.l),0,Math.PI*2);x.fill()}x.globalAlpha=1;bursts=bursts.filter(q=>q.l>0)}
-function ship(a,b){x.save();x.translate(a,b);x.shadowColor="#00f7ff";x.shadowBlur=18;x.fillStyle="#00f7ff";x.beginPath();x.moveTo(0,-30);x.lineTo(25,20);x.lineTo(8,14);x.lineTo(0,28);x.lineTo(-8,14);x.lineTo(-25,20);x.closePath();x.fill();x.shadowBlur=0;x.fillStyle="#fff";x.beginPath();x.arc(0,-5,6,0,Math.PI*2);x.fill();x.restore()}
-function loop(){if(gameOver)return;frame++;if(type==="racer")racer();if(type==="shooter")shooter();if(type==="battle")battle();if(type==="zombie")zombie();if(type==="castle")castle()}
-function shooter(){bg();starfield();ship(px,py);if(frame%Math.max(18,44-level*2)===0)enemies.push({x:30+Math.random()*760,y:-35,v:1.6+level*.2,b:Math.random()<.15});if(frame%300===0)items.push({x:30+Math.random()*760,y:-20,v:2});for(const b of bullets)b.y-=b.v;bullets=bullets.filter(b=>b.y>-30);for(const e of enemies)e.y+=e.v;for(const e of enemies){x.fillStyle=e.b?"#ff00d4":"#ff3030";x.shadowColor=x.fillStyle;x.shadowBlur=14;x.beginPath();x.moveTo(e.x,e.y-18);x.lineTo(e.x+27,e.y+10);x.lineTo(e.x,e.y+18);x.lineTo(e.x-27,e.y+10);x.closePath();x.fill();x.shadowBlur=0}x.fillStyle="#ffd500";for(const b of bullets)x.fillRect(b.x-3,b.y,6,22);for(let i=bullets.length-1;i>=0;i--)for(let j=enemies.length-1;j>=0;j--){let b=bullets[i],e=enemies[j];if(Math.abs(b.x-e.x)<28&&Math.abs(b.y-e.y)<25){bullets.splice(i,1);enemies.splice(j,1);add(e.b?30:10);burst(e.x,e.y);break}}for(let i=items.length-1;i>=0;i--){items[i].y+=items[i].v;x.fillStyle="#ffd500";x.beginPath();x.arc(items[i].x,items[i].y,11,0,Math.PI*2);x.fill();if(Math.hypot(items[i].x-px,items[i].y-py)<35){items.splice(i,1);lives=Math.min(5,lives+1);hud()}}for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>py-15&&Math.abs(enemies[i].x-px)<40){enemies.splice(i,1);damage()}effects()}
-function racer(){bg();x.fillStyle="#161624";x.fillRect(115,0,590,460);x.strokeStyle="#eee";x.lineWidth=5;x.setLineDash([30,24]);x.lineDashOffset=frame*5;for(let i=1;i<4;i++){x.beginPath();x.moveTo(115+i*147.5,0);x.lineTo(115+i*147.5,460);x.stroke()}x.setLineDash([]);x.fillStyle="#555";x.fillRect(105,0,10,460);x.fillRect(705,0,10,460);if(frame%Math.max(18,40-level*2)===0)enemies.push({x:145+Math.random()*530,y:-90,v:5+level*.5,coin:Math.random()<.22});for(const e of enemies)e.y+=e.v;enemies=enemies.filter(e=>e.y<500);for(const e of enemies){if(e.coin){x.fillStyle="#ffd500";x.shadowColor="#ffd500";x.shadowBlur=15;x.beginPath();x.arc(e.x,e.y,13,0,Math.PI*2);x.fill();x.shadowBlur=0}else{car(e.x,e.y,e.color||"#ff3030")}}car(px,py,"#00f7ff");for(let i=enemies.length-1;i>=0;i--){let e=enemies[i];if(Math.abs(e.x-px)<42&&Math.abs(e.y-py)<58){enemies.splice(i,1);if(e.coin)add(25);else{burst(px,py);damage()}}}if(frame%12===0)add(1);effects()}
-function car(a,b,col){x.save();x.translate(a,b);x.shadowColor=col;x.shadowBlur=16;x.fillStyle="#111";x.fillRect(-30,-42,60,84);x.fillStyle=col;x.beginPath();x.roundRect(-25,-40,50,80,14);x.fill();x.fillStyle="#bff";x.beginPath();x.roundRect(-17,-27,34,23,6);x.fill();x.fillStyle="#111";x.fillRect(-21,-39,8,15);x.fillRect(13,-39,8,15);x.fillRect(-21,24,8,15);x.fillRect(13,24,8,15);x.fillStyle="#fff";x.fillRect(-19,-37,10,5);x.fillRect(9,-37,10,5);x.fillStyle="#f00";x.fillRect(-19,32,10,5);x.fillRect(9,32,10,5);x.shadowBlur=0;x.restore()}
-function battle(){bg();x.fillStyle="#151528";x.fillRect(0,330,820,130);x.fillStyle="#00f7ff";x.shadowColor="#00f7ff";x.shadowBlur=20;x.fillRect(px-28,330,56,85);x.shadowBlur=0;x.fillStyle="#fff";x.fillRect(px-9,315,18,28);if(frame%Math.max(22,52-level*2)===0)enemies.push({x:30+Math.random()*760,y:-35,v:1.5+level*.2});for(const e of enemies)e.y+=e.v;for(const b of bullets)b.y-=b.v;bullets=bullets.filter(b=>b.y>0);for(const e of enemies){x.fillStyle="#ff3030";x.beginPath();x.arc(e.x,e.y,22,0,Math.PI*2);x.fill();x.fillStyle="#222";x.fillRect(e.x-12,e.y-5,7,7);x.fillRect(e.x+5,e.y-5,7,7)}x.fillStyle="#ffd500";for(const b of bullets)x.fillRect(b.x-3,b.y,6,20);for(let i=bullets.length-1;i>=0;i--)for(let j=enemies.length-1;j>=0;j--){let b=bullets[i],e=enemies[j];if(Math.abs(b.x-e.x)<28&&Math.abs(b.y-e.y)<28){bullets.splice(i,1);enemies.splice(j,1);add(15);burst(e.x,e.y);break}}for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>330){enemies.splice(i,1);damage()}effects()}
-function zombie(){bg();x.fillStyle="#09160e";x.fillRect(0,0,820,460);for(let i=0;i<8;i++){x.strokeStyle="#123c25";x.beginPath();x.arc(80+i*100,90+(i%3)*100,50,0,Math.PI*2);x.stroke()}if(frame%Math.max(17,43-level*2)===0)enemies.push({x:20+Math.random()*780,y:-25,v:1+level*.2});for(const e of enemies)e.y+=e.v;for(const e of enemies){x.fillStyle="#72ff3b";x.beginPath();x.arc(e.x,e.y,20,0,Math.PI*2);x.fill();x.fillStyle="#061";x.fillRect(e.x-11,e.y-5,6,6);x.fillRect(e.x+5,e.y-5,6,6);x.fillRect(e.x-5,e.y+7,10,3)}for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>440){enemies.splice(i,1);damage()}if(frame%30===0)add(1);effects()}
-function ninja(){bg();starfield();if(!target)newTarget();target.life--;let r=Math.max(10,target.r-target.life/20);x.shadowColor="#ff00d4";x.shadowBlur=28;x.fillStyle="#ff00d4";x.beginPath();x.arc(target.x,target.y,r,0,Math.PI*2);x.fill();x.shadowBlur=0;x.strokeStyle="#00f7ff";x.beginPath();x.arc(target.x,target.y,r+10,0,Math.PI*2);x.stroke();x.fillStyle="#fff";x.font="bold 18px Arial";x.textAlign="center";x.fillText("COMBO "+combo,410,30);if(target.life<=0){combo=0;damage();newTarget()}effects()}
+function bg(){x.fillStyle="#020208";x.fillRect(0,0,820,460)}
+function starfield(){
+  for(const s of stars){s.y+=s.v*(1+level*.04);if(s.y>460){s.y=-3;s.x=Math.random()*820}x.globalAlpha=.25+s.s/5;x.fillStyle="#fff";x.fillRect(s.x,s.y,s.s,s.s*2)}
+  x.globalAlpha=1;
+}
+function burst(a,b){
+  for(let i=0;i<15;i++)bursts.push({x:a,y:b,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*6,l:22});
+}
+function effects(){
+  for(const q of bursts){q.x+=q.vx;q.y+=q.vy;q.l--;x.globalAlpha=q.l/22;x.fillStyle=q.l%2?"#ffd500":"#ff00d4";x.beginPath();x.arc(q.x,q.y,Math.max(2,20-q.l),0,Math.PI*2);x.fill()}
+  x.globalAlpha=1;bursts=bursts.filter(q=>q.l>0);
+}
+function ship(a,b){
+  x.save();x.translate(a,b);x.shadowColor="#00f7ff";x.shadowBlur=18;x.fillStyle="#00f7ff";
+  x.beginPath();x.moveTo(0,-30);x.lineTo(25,20);x.lineTo(8,14);x.lineTo(0,28);x.lineTo(-8,14);x.lineTo(-25,20);x.closePath();x.fill();
+  x.shadowBlur=0;x.fillStyle="#fff";x.beginPath();x.arc(0,-5,6,0,Math.PI*2);x.fill();x.restore();
+}
+function loop(){
+  if(gameOver)return;
+  frame++;
+  if(type==="racer")racer();if(type==="shooter")shooter();if(type==="battle")battle();if(type==="zombie")zombie();if(type==="castle")castle();
+}
+function shooter(){
+  bg();starfield();ship(px,py);
+  if(frame%Math.max(18,44-level*2)===0)enemies.push({x:30+Math.random()*760,y:-35,v:1.6+level*.2,b:Math.random()<.15});
+  if(frame%300===0)items.push({x:30+Math.random()*760,y:-20,v:2});
+  for(const b of bullets)b.y-=b.v;bullets=bullets.filter(b=>b.y>-30);
+  for(const e of enemies)e.y+=e.v;
+  for(const e of enemies){x.fillStyle=e.b?"#ff00d4":"#ff3030";x.shadowColor=x.fillStyle;x.shadowBlur=14;x.beginPath();x.moveTo(e.x,e.y-18);x.lineTo(e.x+27,e.y+10);x.lineTo(e.x,e.y+18);x.lineTo(e.x-27,e.y+10);x.closePath();x.fill();x.shadowBlur=0}
+  x.fillStyle="#ffd500";for(const b of bullets)x.fillRect(b.x-3,b.y,6,22);
+  for(let i=bullets.length-1;i>=0;i--)for(let j=enemies.length-1;j>=0;j--){let b=bullets[i],e=enemies[j];if(Math.abs(b.x-e.x)<28&&Math.abs(b.y-e.y)<25){bullets.splice(i,1);enemies.splice(j,1);add(e.b?30:10);burst(e.x,e.y);break}}
+  for(let i=items.length-1;i>=0;i--){items[i].y+=items[i].v;x.fillStyle="#ffd500";x.beginPath();x.arc(items[i].x,items[i].y,11,0,Math.PI*2);x.fill();if(Math.hypot(items[i].x-px,items[i].y-py)<35){items.splice(i,1);lives=Math.min(5,lives+1);hud()}}
+  for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>py-15&&Math.abs(enemies[i].x-px)<40){enemies.splice(i,1);damage()}
+  effects();
+}
+function racer(){
+  bg();x.fillStyle="#161624";x.fillRect(115,0,590,460);x.strokeStyle="#eee";x.lineWidth=5;x.setLineDash([30,24]);x.lineDashOffset=frame*5;
+  for(let i=1;i<4;i++){x.beginPath();x.moveTo(115+i*147.5,0);x.lineTo(115+i*147.5,460);x.stroke()}
+  x.setLineDash([]);x.fillStyle="#555";x.fillRect(105,0,10,460);x.fillRect(705,0,10,460);
+  if(frame%Math.max(18,40-level*2)===0)enemies.push({x:145+Math.random()*530,y:-90,v:5+level*.5,coin:Math.random()<.22});
+  for(const e of enemies)e.y+=e.v;enemies=enemies.filter(e=>e.y<500);
+  for(const e of enemies){if(e.coin){x.fillStyle="#ffd500";x.shadowColor="#ffd500";x.shadowBlur=15;x.beginPath();x.arc(e.x,e.y,13,0,Math.PI*2);x.fill();x.shadowBlur=0}else car(e.x,e.y,e.color||"#ff3030")}
+  car(px,py,"#00f7ff");
+  for(let i=enemies.length-1;i>=0;i--){let e=enemies[i];if(Math.abs(e.x-px)<42&&Math.abs(e.y-py)<58){enemies.splice(i,1);if(e.coin)add(25);else{burst(px,py);damage()}}}
+  if(frame%12===0)add(1);effects();
+}
+function car(a,b,col){
+  x.save();x.translate(a,b);x.shadowColor=col;x.shadowBlur=16;x.fillStyle="#111";x.fillRect(-30,-42,60,84);
+  x.fillStyle=col;x.beginPath();x.roundRect(-25,-40,50,80,14);x.fill();x.fillStyle="#bff";x.beginPath();x.roundRect(-17,-27,34,23,6);x.fill();
+  x.fillStyle="#111";x.fillRect(-21,-39,8,15);x.fillRect(13,-39,8,15);x.fillRect(-21,24,8,15);x.fillRect(13,24,8,15);
+  x.fillStyle="#fff";x.fillRect(-19,-37,10,5);x.fillRect(9,-37,10,5);x.fillStyle="#f00";x.fillRect(-19,32,10,5);x.fillRect(9,32,10,5);x.shadowBlur=0;x.restore();
+}
+function battle(){
+  bg();x.fillStyle="#151528";x.fillRect(0,330,820,130);x.fillStyle="#00f7ff";x.shadowColor="#00f7ff";x.shadowBlur=20;x.fillRect(px-28,330,56,85);x.shadowBlur=0;
+  x.fillStyle="#fff";x.fillRect(px-9,315,18,28);
+  if(frame%Math.max(22,52-level*2)===0)enemies.push({x:30+Math.random()*760,y:-35,v:1.5+level*.2});
+  for(const e of enemies)e.y+=e.v;for(const b of bullets)b.y-=b.v;bullets=bullets.filter(b=>b.y>0);
+  for(const e of enemies){x.fillStyle="#ff3030";x.beginPath();x.arc(e.x,e.y,22,0,Math.PI*2);x.fill();x.fillStyle="#222";x.fillRect(e.x-12,e.y-5,7,7);x.fillRect(e.x+5,e.y-5,7,7)}
+  x.fillStyle="#ffd500";for(const b of bullets)x.fillRect(b.x-3,b.y,6,20);
+  for(let i=bullets.length-1;i>=0;i--)for(let j=enemies.length-1;j>=0;j--){let b=bullets[i],e=enemies[j];if(Math.abs(b.x-e.x)<28&&Math.abs(b.y-e.y)<28){bullets.splice(i,1);enemies.splice(j,1);add(15);burst(e.x,e.y);break}}
+  for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>330){enemies.splice(i,1);damage()}effects();
+}
+function zombie(){
+  bg();x.fillStyle="#09160e";x.fillRect(0,0,820,460);
+  for(let i=0;i<8;i++){x.strokeStyle="#123c25";x.beginPath();x.arc(80+i*100,90+(i%3)*100,50,0,Math.PI*2);x.stroke()}
+  if(frame%Math.max(17,43-level*2)===0)enemies.push({x:20+Math.random()*780,y:-25,v:1+level*.2});
+  for(const e of enemies)e.y+=e.v;for(const e of enemies){x.fillStyle="#72ff3b";x.beginPath();x.arc(e.x,e.y,20,0,Math.PI*2);x.fill();x.fillStyle="#061";x.fillRect(e.x-11,e.y-5,6,6);x.fillRect(e.x+5,e.y-5,6,6);x.fillRect(e.x-5,e.y+7,10,3)}
+  for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>440){enemies.splice(i,1);damage()}if(frame%30===0)add(1);effects();
+}
+function ninja(){
+  bg();starfield();if(!target)newTarget();target.life--;let r=Math.max(10,target.r-target.life/20);
+  x.shadowColor="#ff00d4";x.shadowBlur=28;x.fillStyle="#ff00d4";x.beginPath();x.arc(target.x,target.y,r,0,Math.PI*2);x.fill();x.shadowBlur=0;
+  x.strokeStyle="#00f7ff";x.beginPath();x.arc(target.x,target.y,r+10,0,Math.PI*2);x.stroke();
+  x.fillStyle="#fff";x.font="bold 18px Arial";x.textAlign="center";x.fillText("COMBO "+combo,410,30);
+  if(target.life<=0){combo=0;damage();newTarget()}effects();
+}
 function newTarget(){target={x:50+Math.random()*720,y:60+Math.random()*330,r:30,life:115}}
-function castle(){bg();x.fillStyle="#28213c";x.fillRect(0,350,820,110);x.fillStyle="#00f7ff";x.shadowColor="#00f7ff";x.shadowBlur=20;x.fillRect(335,285,150,110);x.shadowBlur=0;x.fillStyle="#12121d";x.fillRect(355,310,30,85);x.fillRect(435,310,30,85);if(frame%Math.max(20,46-level*2)===0)enemies.push({x:20+Math.random()*780,y:40,v:1+level*.16});for(const e of enemies)e.y+=e.v;for(const e of enemies){x.fillStyle="#ff3030";x.fillRect(e.x-15,e.y-15,30,30)}for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>285){enemies.splice(i,1);damage()}x.fillStyle="#ffd500";x.fillRect(10,10,Math.max(0,lives)*90,12);x.fillStyle="#fff";x.font="bold 16px Arial";x.fillText("CASTLE DEFENSE",20,45);effects()}
-function castleFire(){let best=-1,dist=9999;for(let i=0;i<enemies.length;i++){let d=Math.abs(enemies[i].x-410);if(d<dist){dist=d;best=i}}if(best>=0){let e=enemies[best];enemies.splice(best,1);add(20);burst(e.x,e.y)}}
-c.addEventListener("pointerdown",e=>{if(!gameBox.classList.contains("show"))return;let r=c.getBoundingClientRect(),mx=(e.clientX-r.left)*820/r.width,my=(e.clientY-r.top)*460/r.height;if(type==="racer")px=Math.max(145,Math.min(675,mx));else if(type==="shooter"||type==="battle")bullets.push({x:px,y:py-20,v:12});else if(type==="zombie"){for(let i=enemies.length-1;i>=0;i--){let q=enemies[i];if(Math.hypot(mx-q.x,my-q.y)<32){enemies.splice(i,1);add(15);burst(q.x,q.y);break}}}else if(type==="ninja"&&target){let rr=Math.max(10,target.r-target.life/20);if(Math.hypot(mx-target.x,my-target.y)<rr){combo++;add(10+combo*2);burst(target.x,target.y);newTarget()}}else if(type==="castle"){for(let i=enemies.length-1;i>=0;i--){let q=enemies[i];if(Math.hypot(mx-q.x,my-q.y)<38){enemies.splice(i,1);add(20);burst(q.x,q.y);break}}}});
+function castle(){
+  bg();x.fillStyle="#28213c";x.fillRect(0,350,820,110);x.fillStyle="#00f7ff";x.shadowColor="#00f7ff";x.shadowBlur=20;x.fillRect(335,285,150,110);x.shadowBlur=0;
+  x.fillStyle="#12121d";x.fillRect(355,310,30,85);x.fillRect(435,310,30,85);
+  if(frame%Math.max(20,46-level*2)===0)enemies.push({x:20+Math.random()*780,y:40,v:1+level*.16});
+  for(const e of enemies)e.y+=e.v;for(const e of enemies){x.fillStyle="#ff3030";x.fillRect(e.x-15,e.y-15,30,30)}
+  for(let i=enemies.length-1;i>=0;i--)if(enemies[i].y>285){enemies.splice(i,1);damage()}
+  x.fillStyle="#ffd500";x.fillRect(10,10,Math.max(0,lives)*90,12);x.fillStyle="#fff";x.font="bold 16px Arial";x.fillText("CASTLE DEFENSE",20,45);effects();
+}
+function castleFire(){
+  let best=-1,dist=9999;
+  for(let i=0;i<enemies.length;i++){let d=Math.abs(enemies[i].x-410);if(d<dist){dist=d;best=i}}
+  if(best>=0){let e=enemies[best];enemies.splice(best,1);add(20);burst(e.x,e.y)}
+}
+c.addEventListener("pointerdown",e=>{
+  if(!gameBox.classList.contains("show"))return;
+  let r=c.getBoundingClientRect(),mx=(e.clientX-r.left)*820/r.width,my=(e.clientY-r.top)*460/r.height;
+  if(type==="racer")px=Math.max(145,Math.min(675,mx));
+  else if(type==="shooter"||type==="battle")bullets.push({x:px,y:py-20,v:12});
+  else if(type==="zombie"){for(let i=enemies.length-1;i>=0;i--){let q=enemies[i];if(Math.hypot(mx-q.x,my-q.y)<32){enemies.splice(i,1);add(15);burst(q.x,q.y);break}}}
+  else if(type==="ninja"&&target){let rr=Math.max(10,target.r-target.life/20);if(Math.hypot(mx-target.x,my-target.y)<rr){combo++;add(10+combo*2);burst(target.x,target.y);newTarget()}}
+  else if(type==="castle"){for(let i=enemies.length-1;i>=0;i--){let q=enemies[i];if(Math.hypot(mx-q.x,my-q.y)<38){enemies.splice(i,1);add(20);burst(q.x,q.y);break}}}
+});
 </script>
 </body>
 </html>'''
+
 path = Path("/mnt/data/index.html")
 path.write_text(html, encoding="utf-8")
-print(path)
+print(f"Fixed NEXUS ARENA file created: {path}")
